@@ -1,3 +1,4 @@
+const getData = require("../services/getData");
 const predictClassification = require("../services/inferenceService");
 const storeData = require("../services/storeData");
 const crypto = require("crypto");
@@ -17,7 +18,7 @@ async function postPredictHandler(request, h) {
     suggestion: suggestion,
     createdAt: createdAt,
   };
-  
+
   await storeData(id, data);
 
   const response = h.response({
@@ -29,4 +30,25 @@ async function postPredictHandler(request, h) {
   return response;
 }
 
-module.exports = postPredictHandler;
+async function getPredictHandler(request, h) {
+  const data = await getData();
+  // console.log('Data:', data);
+
+  const Predictions = [];
+  data.forEach((doc) => {
+    Predictions.push(doc.data());
+  });
+
+  const response = h.response({
+    status: "success",
+    data: Predictions
+  });
+
+  return response;
+}
+
+module.exports = {
+  postPredictHandler,
+  getPredictHandler
+};
+
